@@ -1,0 +1,2465 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Roleta Anatomia Aplicada</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172126;
+      --muted: #66757f;
+      --line: #d8e0e4;
+      --paper: #f7f3ec;
+      --panel: #ffffff;
+      --teal: #176f73;
+      --teal-dark: #0d4d50;
+      --wine: #8a2d45;
+      --amber: #c78327;
+      --blue: #2e5f87;
+      --green: #4e7f4b;
+      --shadow: 0 18px 45px rgba(23, 33, 38, 0.13);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--paper);
+    }
+
+    body {
+      min-height: 100%;
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(247, 243, 236, 0.94)),
+        repeating-linear-gradient(135deg, rgba(23, 111, 115, 0.06) 0 1px, transparent 1px 18px);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      min-height: 44px;
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: progress;
+      opacity: 0.64;
+    }
+
+    .app {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 36px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      padding: 18px 0 20px;
+    }
+
+    .brand {
+      display: grid;
+      gap: 4px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .status-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(108px, 1fr));
+      gap: 10px;
+      min-width: 360px;
+    }
+
+    .metric {
+      display: grid;
+      gap: 4px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .metric strong {
+      font-size: 1.18rem;
+      line-height: 1;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(330px, 0.94fr) minmax(420px, 1.2fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .wheel-panel,
+    .exam-panel,
+    .round-panel,
+    .scores-panel,
+    .history-panel,
+    .bank-panel {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .wheel-panel {
+      grid-row: 1 / span 4;
+      padding: 18px;
+      position: sticky;
+      top: 16px;
+    }
+
+    .exam-panel {
+      display: grid;
+      gap: 14px;
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .exam-grid {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(130px, 170px) minmax(150px, 190px);
+      gap: 10px;
+      align-items: end;
+    }
+
+    .exam-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .view-tabs {
+      display: flex;
+      gap: 4px;
+      margin: 0 0 18px;
+      padding: 4px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      width: fit-content;
+    }
+
+    .tab-button {
+      min-height: 40px;
+      padding: 0 16px;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      font-weight: 800;
+    }
+
+    .tab-button.active {
+      color: #fff;
+      background: var(--teal);
+    }
+
+    .timer-box {
+      display: grid;
+      grid-template-columns: auto 82px auto auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px;
+      background: #f8fbfb;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .timer-display {
+      min-width: 88px;
+      color: var(--teal-dark);
+      font-size: 1.35rem;
+      line-height: 1;
+      font-weight: 850;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+    }
+
+    .wheel-shell {
+      position: relative;
+      width: min(100%, 420px);
+      aspect-ratio: 1;
+      margin: 0 auto;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      filter: drop-shadow(0 16px 28px rgba(23, 33, 38, 0.18));
+    }
+
+    .pointer {
+      position: absolute;
+      left: 50%;
+      top: -4px;
+      width: 0;
+      height: 0;
+      transform: translateX(-50%);
+      border-left: 17px solid transparent;
+      border-right: 17px solid transparent;
+      border-top: 34px solid var(--wine);
+      filter: drop-shadow(0 4px 4px rgba(23, 33, 38, 0.2));
+      z-index: 2;
+    }
+
+    .wheel-readout {
+      display: grid;
+      gap: 3px;
+      align-content: center;
+      justify-items: center;
+      position: absolute;
+      inset: 33%;
+      padding: 12px;
+      text-align: center;
+      background: #fffaf4;
+      border: 2px solid rgba(23, 33, 38, 0.08);
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 7px rgba(23, 111, 115, 0.09);
+      overflow: hidden;
+    }
+
+    .wheel-readout span {
+      color: var(--muted);
+      font-size: 0.72rem;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .wheel-readout strong {
+      max-width: 100%;
+      font-size: 0.94rem;
+      line-height: 1.16;
+      overflow-wrap: anywhere;
+    }
+
+    .controls {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .controls-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .primary,
+    .secondary,
+    .plain {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 0;
+      padding: 0 16px;
+      border-radius: 8px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    .primary {
+      color: #fff;
+      background: var(--teal);
+    }
+
+    .primary:hover {
+      background: var(--teal-dark);
+    }
+
+    .secondary {
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .secondary:hover,
+    .plain:hover {
+      border-color: #b8c7ce;
+      background: #f8fbfb;
+    }
+
+    .plain {
+      color: var(--teal-dark);
+      background: transparent;
+      border: 1px solid transparent;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(120px, auto));
+      gap: 10px;
+      align-items: center;
+      justify-content: end;
+      margin-bottom: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    select,
+    input[type="search"],
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 12px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 96px;
+      padding: 10px 12px;
+      resize: vertical;
+      line-height: 1.35;
+    }
+
+    select:focus,
+    input[type="search"]:focus,
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="date"]:focus,
+    textarea:focus,
+    button:focus-visible {
+      outline: 3px solid rgba(23, 111, 115, 0.22);
+      outline-offset: 2px;
+    }
+
+    .round-panel,
+    .scores-panel {
+      padding: 18px;
+    }
+
+    .scores-panel {
+      grid-column: 2;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.22rem;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .round-code {
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .selected-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .selected-grid[hidden] {
+      display: none;
+    }
+
+    .structure-card {
+      min-height: 112px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 10px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--teal);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .structure-card.empty {
+      color: var(--muted);
+      border-left-color: #c7d3d8;
+      background: rgba(255, 255, 255, 0.58);
+    }
+
+    .card-index {
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      background: var(--wine);
+      border-radius: 50%;
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .structure-name {
+      align-self: center;
+      font-size: 1.2rem;
+      line-height: 1.18;
+      font-weight: 820;
+      overflow-wrap: anywhere;
+    }
+
+    .station-view {
+      min-height: 305px;
+      display: grid;
+      gap: 18px;
+      align-content: center;
+      justify-items: center;
+      padding: 26px;
+      text-align: center;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--teal);
+      border-radius: 8px;
+    }
+
+    .station-view[hidden] {
+      display: none;
+    }
+
+    .station-label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .station-name {
+      max-width: 100%;
+      font-size: clamp(2rem, 5vw, 4.6rem);
+      line-height: 1.05;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+    }
+
+    .station-controls {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 10px;
+      width: min(360px, 100%);
+    }
+
+    .structure-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.2;
+    }
+
+    .pill {
+      max-width: 100%;
+      padding: 5px 8px;
+      background: #eef5f4;
+      border: 1px solid #d7e7e5;
+      border-radius: 999px;
+      overflow-wrap: anywhere;
+    }
+
+    .history-panel {
+      grid-column: 2;
+      padding: 18px;
+    }
+
+    .bank-panel {
+      display: none;
+      grid-column: 1 / -1;
+      padding: 18px;
+    }
+
+    .student-bulk-tools {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+
+    .student-bulk-actions {
+      display: grid;
+      gap: 8px;
+      min-width: 160px;
+    }
+
+    .student-table {
+      display: grid;
+      gap: 8px;
+    }
+
+    .student-header,
+    .student-row {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) repeat(3, minmax(92px, 110px)) minmax(82px, 100px) auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .student-header {
+      padding: 0 10px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+
+    .student-header span:first-child {
+      text-align: left;
+    }
+
+    .student-list {
+      display: grid;
+      gap: 8px;
+      max-height: 420px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .student-row {
+      padding: 10px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .student-row input[type="text"],
+    .student-row input[type="number"] {
+      min-height: 38px;
+    }
+
+    .student-check {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 38px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .student-check span {
+      display: none;
+    }
+
+    .student-actions {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 8px;
+      max-height: 240px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .history-item {
+      display: grid;
+      gap: 6px;
+      padding: 11px 12px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .history-item strong {
+      font-size: 0.9rem;
+    }
+
+    .history-item span {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.35;
+    }
+
+    .bank-tools {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(120px, 150px) auto auto;
+      gap: 10px;
+      align-items: end;
+      margin: 12px 0;
+    }
+
+    .import-box {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+
+    .import-actions {
+      display: grid;
+      gap: 8px;
+      min-width: 170px;
+    }
+
+    .bank-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      max-height: 330px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .bank-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .bank-item.used {
+      background: #f4f6f6;
+      color: #77848a;
+    }
+
+    .bank-name {
+      font-weight: 760;
+      line-height: 1.18;
+      overflow-wrap: anywhere;
+    }
+
+    .difficulty-tag {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 4px 7px;
+      color: var(--muted);
+      background: #eef5f4;
+      border: 1px solid #d7e7e5;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .bank-meta {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.2;
+    }
+
+    .bank-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .mini-button {
+      min-height: 36px;
+      padding: 0 10px;
+      color: var(--teal-dark);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 760;
+    }
+
+    .mini-button.danger {
+      color: var(--wine);
+    }
+
+    .toast {
+      min-height: 22px;
+      margin: 12px 0 0;
+      color: var(--teal-dark);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    body.student-mode .scores-panel,
+    body.student-mode .history-panel,
+    body.student-mode .bank-panel,
+    body.student-mode .view-tabs,
+    body.student-mode .status-strip,
+    body.student-mode .toolbar,
+    body.student-mode #resetButton,
+    body.student-mode #clearRoundButton {
+      display: none;
+    }
+
+    body.student-mode .exam-panel {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 10;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+    }
+
+    body.student-mode .exam-grid,
+    body.student-mode .timer-box,
+    body.student-mode #exportCsvButton,
+    body.student-mode #backupButton,
+    body.student-mode #restoreBackupButton {
+      display: none;
+    }
+
+    body.student-mode .layout {
+      grid-template-columns: minmax(310px, 0.9fr) minmax(420px, 1.2fr);
+      align-items: center;
+    }
+
+    body.student-mode .wheel-panel {
+      position: static;
+    }
+
+    body.bank-view .exam-panel {
+      display: none;
+    }
+
+    body.bank-view .layout {
+      grid-template-columns: 1fr;
+    }
+
+    body.bank-view .layout > :not(.bank-panel) {
+      display: none;
+    }
+
+    body.bank-view .bank-panel {
+      display: block;
+      grid-column: 1 / -1;
+    }
+
+    body.bank-view .bank-list {
+      max-height: none;
+    }
+
+    @media (max-width: 940px) {
+      .topbar,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      body.student-mode .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .exam-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .scores-panel {
+        grid-column: auto;
+      }
+
+      .history-panel,
+      .bank-panel {
+        grid-column: auto;
+      }
+
+      .status-strip {
+        min-width: 0;
+      }
+
+      .wheel-panel {
+        grid-row: auto;
+        position: static;
+      }
+
+      .bank-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app {
+        width: min(100% - 20px, 1180px);
+        padding-top: 12px;
+      }
+
+      h1 {
+        font-size: 1.55rem;
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+      }
+
+      .status-strip,
+      .exam-grid,
+      .selected-grid,
+      .toolbar,
+      .student-bulk-tools,
+      .controls-row,
+      .bank-tools,
+      .import-box,
+      .bank-list,
+      .timer-box {
+        grid-template-columns: 1fr;
+      }
+
+      .view-tabs {
+        width: 100%;
+      }
+
+      .tab-button {
+        flex: 1;
+        padding: 0 8px;
+      }
+
+      .student-header {
+        display: none;
+      }
+
+      .student-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .student-name-cell,
+      .student-actions {
+        grid-column: 1 / -1;
+      }
+
+      .student-check span {
+        display: inline;
+      }
+
+      .exam-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .primary,
+      .secondary,
+      .plain {
+        width: 100%;
+      }
+
+      .structure-name {
+        font-size: 1.08rem;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .app {
+        width: 100%;
+        padding: 0;
+      }
+
+      .topbar,
+      .exam-panel,
+      .view-tabs,
+      .wheel-panel,
+      .toolbar,
+      .history-panel,
+      .bank-panel,
+      .toast {
+        display: none;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .round-panel {
+        box-shadow: none;
+        border: 0;
+      }
+
+      .selected-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1>Roleta Anatomia Aplicada</h1>
+        <p class="subtitle">Prova prática de Fisioterapia</p>
+      </div>
+      <div class="status-strip" aria-label="Status do sorteio">
+        <div class="metric">
+          <span>Banco</span>
+          <strong id="totalCount">0</strong>
+        </div>
+        <div class="metric">
+          <span>Restantes</span>
+          <strong id="remainingCount">0</strong>
+        </div>
+        <div class="metric">
+          <span>Rodadas</span>
+          <strong id="roundCount">0</strong>
+        </div>
+      </div>
+    </header>
+
+    <section class="exam-panel" aria-label="Configuração da prova">
+      <div class="exam-grid">
+        <div class="field">
+          <label for="classInput">Turma</label>
+          <input id="classInput" type="text" placeholder="Ex.: Fisioterapia 2026.1">
+        </div>
+        <div class="field">
+          <label for="examInput">Prova</label>
+          <input id="examInput" type="text" placeholder="Ex.: Anatomia aplicada">
+        </div>
+        <div class="field">
+          <label for="examDateInput">Data</label>
+          <input id="examDateInput" type="date">
+        </div>
+        <div class="field">
+          <label for="difficultyMode">Sorteio</label>
+          <select id="difficultyMode">
+            <option value="mixed">Equilibrado</option>
+            <option value="any">Livre</option>
+            <option value="easy">Fácil</option>
+            <option value="medium">Médio</option>
+            <option value="hard">Difícil</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="exam-actions">
+        <div class="timer-box" aria-label="Cronômetro">
+          <div class="timer-display" id="timerDisplay">05:00</div>
+          <label class="sr-only" for="timerMinutes">Minutos</label>
+          <input id="timerMinutes" type="number" min="1" max="60" step="1" value="5" aria-label="Minutos do cronômetro">
+          <button class="secondary" id="timerStartButton" type="button">Iniciar</button>
+          <button class="secondary" id="timerResetButton" type="button">Zerar</button>
+        </div>
+        <button class="secondary" id="studentModeButton" type="button">Modo aluno</button>
+        <button class="secondary" id="exportCsvButton" type="button">Exportar CSV</button>
+        <button class="secondary" id="backupButton" type="button">Backup</button>
+        <button class="secondary" id="restoreBackupButton" type="button">Restaurar backup</button>
+        <input class="sr-only" id="backupFileInput" type="file" accept="application/json,.json">
+      </div>
+    </section>
+
+    <nav class="view-tabs" aria-label="Áreas do aplicativo">
+      <button class="tab-button active" id="applicationTabButton" type="button" aria-selected="true">Aplicação da prova</button>
+      <button class="tab-button" id="bankTabButton" type="button" aria-selected="false">Banco de estruturas</button>
+    </nav>
+
+    <section class="layout">
+      <aside class="wheel-panel" aria-label="Roleta">
+        <div class="wheel-shell">
+          <div class="pointer" aria-hidden="true"></div>
+          <canvas id="wheelCanvas" width="900" height="900"></canvas>
+          <div class="wheel-readout" aria-live="polite">
+            <span id="spinStep">Pronto</span>
+            <strong id="spinName">Nova rodada</strong>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="primary" id="spinButton" type="button">Nova rodada</button>
+          <div class="controls-row">
+            <button class="secondary" id="resetButton" type="button">Reiniciar banco</button>
+            <button class="secondary" id="clearRoundButton" type="button">Limpar rodada</button>
+          </div>
+          <p class="toast" id="toast" role="status"></p>
+        </div>
+      </aside>
+
+      <section class="round-panel" aria-label="Rodada atual">
+        <div class="toolbar">
+          <button class="plain" id="stationModeButton" type="button">Modo estação</button>
+          <button class="plain" id="copyButton" type="button">Copiar</button>
+          <button class="plain" id="printButton" type="button">PDF/Imprimir</button>
+        </div>
+        <div class="section-title">
+          <h2>Rodada atual</h2>
+          <span class="round-code" id="roundLabel">6 estruturas</span>
+        </div>
+        <div class="selected-grid" id="selectedGrid"></div>
+        <div class="station-view" id="stationView" hidden>
+          <div class="station-label" id="stationLabel">Estação 1 de 6</div>
+          <div class="station-name" id="stationName">Aguardando sorteio</div>
+          <div class="station-controls">
+            <button class="secondary" id="prevStationButton" type="button">Anterior</button>
+            <button class="secondary" id="nextStationButton" type="button">Próxima</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="scores-panel" aria-label="Alunos e notas">
+        <div class="section-title">
+          <h2>Alunos da rodada</h2>
+          <span class="round-code" id="studentCount">0 alunos</span>
+        </div>
+        <div class="student-bulk-tools">
+          <div class="field">
+            <label for="studentBulkInput">Lista de alunos</label>
+            <textarea id="studentBulkInput" rows="4" placeholder="Cole ou digite um aluno por linha"></textarea>
+          </div>
+          <div class="student-bulk-actions">
+            <button class="primary" id="addStudentsButton" type="button">Cadastrar lista</button>
+            <button class="secondary" id="clearStudentsButton" type="button">Limpar alunos</button>
+          </div>
+        </div>
+        <div class="student-table">
+          <div class="student-header" aria-hidden="true">
+            <span>Aluno</span>
+            <span>Localização</span>
+            <span>Palpação</span>
+            <span>Função</span>
+            <span>Nota</span>
+            <span></span>
+          </div>
+          <div class="student-list" id="studentList"></div>
+        </div>
+      </section>
+
+      <section class="history-panel" aria-label="Histórico">
+        <div class="section-title">
+          <h2>Histórico</h2>
+          <button class="plain" id="clearHistoryButton" type="button">Limpar histórico</button>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </section>
+
+      <section class="bank-panel" aria-label="Banco de estruturas">
+        <div class="section-title">
+          <h2>Banco de estruturas</h2>
+          <span class="round-code" id="visibleBankCount">0 itens</span>
+        </div>
+        <div class="bank-tools">
+          <div class="field">
+            <label for="searchInput">Buscar</label>
+            <input id="searchInput" type="search" placeholder="Nome da estrutura">
+          </div>
+          <div class="field">
+            <label for="newStructureInput">Nova estrutura</label>
+            <input id="newStructureInput" type="text" placeholder="Adicionar estrutura" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="newDifficultySelect">Dificuldade</label>
+            <select id="newDifficultySelect">
+              <option value="medium">Médio</option>
+              <option value="easy">Fácil</option>
+              <option value="hard">Difícil</option>
+            </select>
+          </div>
+          <button class="primary" id="addStructureButton" type="button">Adicionar</button>
+          <button class="secondary" id="restoreBankButton" type="button">Restaurar original</button>
+        </div>
+        <div class="import-box">
+          <div class="field">
+            <label for="bulkImportInput">Importar estruturas</label>
+            <textarea id="bulkImportInput" rows="4" placeholder="Uma estrutura por linha. Use ; para indicar dificuldade: Acetábulo;difícil"></textarea>
+          </div>
+          <div class="import-actions">
+            <button class="secondary" id="importFileButton" type="button">Carregar arquivo</button>
+            <button class="secondary" id="appendImportButton" type="button">Adicionar lista</button>
+            <button class="secondary" id="replaceImportButton" type="button">Substituir banco</button>
+            <input class="sr-only" id="bankFileInput" type="file" accept=".txt,.csv,text/plain,text/csv">
+          </div>
+        </div>
+        <div class="bank-list" id="bankList"></div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const ROUND_SIZE = 6;
+    const STORAGE_KEY = "roleta-anatomia-aplicada-v3";
+    const COLORS = ["#176f73", "#8a2d45", "#c78327", "#2e5f87", "#4e7f4b", "#7a5d28", "#546a76", "#b65f3b"];
+    const DIFFICULTIES = {
+      easy: "Fácil",
+      medium: "Médio",
+      hard: "Difícil"
+    };
+    const CRITERIA = {
+      location: "Localização",
+      palpation: "Palpação",
+      function: "Função"
+    };
+
+    const DEFAULT_STRUCTURES = [
+      { id: "escapula", name: "Escápula", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Escápula" },
+      { id: "espinha-escapula", name: "Espinha da escápula", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Escápula" },
+      { id: "acromio", name: "Acrômio", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Escápula" },
+      { id: "processo-coracoide", name: "Processo coracoide", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Escápula" },
+      { id: "cavidade-glenoidal", name: "Cavidade glenoidal", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Escápula" },
+      { id: "borda-medial", name: "Borda medial", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Escápula" },
+      { id: "borda-lateral", name: "Borda lateral", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Escápula" },
+      { id: "angulo-superior", name: "Ângulo superior", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Escápula" },
+      { id: "angulo-inferior", name: "Ângulo inferior", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Escápula" },
+      { id: "fossa-supraespinal", name: "Fossa supraespinal", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Escápula" },
+      { id: "fossa-infraespinal", name: "Fossa infraespinal", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Escápula" },
+      { id: "fossa-subescapular", name: "Fossa subescapular", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Escápula" },
+      { id: "umero-proximal", name: "Úmero proximal", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Úmero proximal" },
+      { id: "cabeca-umero", name: "Cabeça do úmero", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Úmero proximal" },
+      { id: "tuberculo-maior", name: "Tubérculo maior", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Úmero proximal" },
+      { id: "tuberculo-menor", name: "Tubérculo menor", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Úmero proximal" },
+      { id: "esterno", name: "Esterno", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "clavicula", name: "Clavícula", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "grade-costal", name: "Grade costal", region: "Cintura escapular e ombro", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "esternoclavicular", name: "Esternoclavicular", region: "Cintura escapular e ombro", group: "Articulações", context: "Esterno + clavícula" },
+      { id: "acromioclavicular", name: "Acromioclavicular", region: "Cintura escapular e ombro", group: "Articulações", context: "Acrômio + clavícula" },
+      { id: "glenoumeral", name: "Glenoumeral", region: "Cintura escapular e ombro", group: "Articulações", context: "Cabeça do úmero + cavidade glenoidal" },
+      { id: "escapulotoracica", name: "Escapulotorácica", region: "Cintura escapular e ombro", group: "Articulações", context: "Escápula sobre a grade costal" },
+      { id: "trapezio", name: "Trapézio", region: "Cintura escapular e ombro", group: "Músculos", context: "Cintura escapular" },
+      { id: "peitoral-menor", name: "Peitoral menor", region: "Cintura escapular e ombro", group: "Músculos", context: "Cintura escapular" },
+      { id: "deltoide", name: "Deltoide", region: "Cintura escapular e ombro", group: "Músculos", context: "Ombro" },
+      { id: "supraespinal-musculo", name: "Supraespinal", region: "Cintura escapular e ombro", group: "Músculos", context: "Ombro" },
+      { id: "infraespinal-musculo", name: "Infraespinal", region: "Cintura escapular e ombro", group: "Músculos", context: "Ombro" },
+      { id: "peitoral-maior", name: "Peitoral maior", region: "Cintura escapular e ombro", group: "Músculos", context: "Ombro" },
+
+      { id: "umero-distal", name: "Úmero distal", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Úmero distal" },
+      { id: "epicondilo-medial-umero", name: "Epicôndilo medial", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Úmero distal" },
+      { id: "epicondilo-lateral-umero", name: "Epicôndilo lateral", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Úmero distal" },
+      { id: "ulna", name: "Ulna", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Ulna" },
+      { id: "olecrano", name: "Olécrano", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Ulna" },
+      { id: "cabeca-ulna", name: "Cabeça da ulna", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Ulna" },
+      { id: "processo-estiloide-ulna", name: "Processo estiloide da ulna", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Ulna" },
+      { id: "radio", name: "Rádio", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Rádio" },
+      { id: "cabeca-radio", name: "Cabeça do rádio", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Rádio" },
+      { id: "tuberosidade-radio", name: "Tuberosidade do rádio", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Rádio" },
+      { id: "processo-estiloide-radio", name: "Processo estiloide do rádio", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Rádio" },
+      { id: "troclea-umero", name: "Tróclea do úmero", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "incisura-troclear-ulna", name: "Incisura troclear da ulna", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "ossos-carpo", name: "Ossos do carpo", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "metacarpos", name: "Metacarpos", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "falanges-mao", name: "Falanges da mão", region: "Braço, cotovelo, antebraço, punho e mão", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "umero-ulnar", name: "Úmero-ulnar", region: "Braço, cotovelo, antebraço, punho e mão", group: "Articulações", context: "Tróclea do úmero + incisura troclear da ulna" },
+      { id: "radiocarpal", name: "Radiocarpal", region: "Braço, cotovelo, antebraço, punho e mão", group: "Articulações", context: "Rádio + ossos do carpo" },
+      { id: "metacarpofalangicas", name: "Metacarpofalângicas", region: "Braço, cotovelo, antebraço, punho e mão", group: "Articulações", context: "Metacarpos + falanges" },
+      { id: "interfalangicas-mao", name: "Interfalângicas", region: "Braço, cotovelo, antebraço, punho e mão", group: "Articulações", context: "Falanges da mão" },
+      { id: "biceps-braquial", name: "Bíceps braquial", region: "Braço, cotovelo, antebraço, punho e mão", group: "Músculos", context: "Braço anterior" },
+      { id: "triceps-braquial", name: "Tríceps braquial", region: "Braço, cotovelo, antebraço, punho e mão", group: "Músculos", context: "Braço posterior" },
+
+      { id: "vertebra", name: "Vértebra", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Coluna vertebral" },
+      { id: "corpo-vertebral", name: "Corpo vertebral", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Vértebra" },
+      { id: "forame-vertebral", name: "Forame vertebral", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Vértebra" },
+      { id: "processo-espinhoso", name: "Processo espinhoso", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Vértebra" },
+      { id: "processos-transversos", name: "Processos transversos", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Vértebra" },
+      { id: "forames-transversarios", name: "Forames transversários", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Região cervical" },
+      { id: "atlas-c1", name: "Atlas (C1)", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Região cervical" },
+      { id: "axis-c2", name: "Axis (C2)", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Região cervical" },
+      { id: "dente-axis", name: "Dente do axis", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Axis (C2)" },
+      { id: "processo-espinhoso-toracico", name: "Processo espinhoso mais longo e inclinado", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Região torácica" },
+      { id: "articulacao-costelas", name: "Articulação com as costelas", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Região torácica" },
+      { id: "corpo-vertebral-grande", name: "Corpo vertebral grande", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Região lombar" },
+      { id: "processo-espinhoso-robusto", name: "Processo espinhoso robusto", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Região lombar" },
+      { id: "discos-intervertebrais", name: "Discos intervertebrais", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "costelas", name: "Costelas", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "vertebras-toracicas", name: "Vértebras torácicas", region: "Tronco e coluna vertebral", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "intervertebrais", name: "Intervertebrais", region: "Tronco e coluna vertebral", group: "Articulações", context: "Corpos vertebrais + discos" },
+      { id: "costovertebrais", name: "Costovertebrais", region: "Tronco e coluna vertebral", group: "Articulações", context: "Costelas + vértebras torácicas" },
+      { id: "reto-abdominal", name: "Reto abdominal", region: "Tronco e coluna vertebral", group: "Músculos", context: "Região abdominal" },
+      { id: "transverso-abdome", name: "Transverso do abdome", region: "Tronco e coluna vertebral", group: "Músculos", context: "Região abdominal" },
+      { id: "diafragma", name: "Diafragma", region: "Tronco e coluna vertebral", group: "Músculos", context: "Região respiratória" },
+      { id: "intercostais", name: "Intercostais externos e internos", region: "Tronco e coluna vertebral", group: "Músculos", context: "Região respiratória" },
+
+      { id: "osso-quadril", name: "Osso do quadril", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Osso do quadril" },
+      { id: "acetabulo", name: "Acetábulo", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Osso do quadril" },
+      { id: "crista-iliaca", name: "Crista ilíaca", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Osso do quadril" },
+      { id: "eias", name: "Espinha ilíaca ântero-superior (EIAS)", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Osso do quadril" },
+      { id: "eiai", name: "Espinha ilíaca ântero-inferior (EIAI)", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Osso do quadril" },
+      { id: "eips", name: "Espinha ilíaca póstero-superior (EIPS)", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Osso do quadril" },
+      { id: "tuberosidade-isquiatica", name: "Tuberosidade isquiática", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Osso do quadril" },
+      { id: "espinha-isquiatica", name: "Espinha isquiática", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Osso do quadril" },
+      { id: "ramo-pubis", name: "Ramo do púbis", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Osso do quadril" },
+      { id: "sinfise-pubica", name: "Sínfise púbica", region: "Quadril, pelve e fêmur", group: "Articulações", context: "Púbis direito + púbis esquerdo" },
+      { id: "femur", name: "Fêmur", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Fêmur" },
+      { id: "cabeca-femur", name: "Cabeça do fêmur", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Fêmur" },
+      { id: "colo-femur", name: "Colo do fêmur", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Fêmur" },
+      { id: "trocanter-maior", name: "Trocânter maior", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Fêmur" },
+      { id: "trocanter-menor", name: "Trocânter menor", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Fêmur" },
+      { id: "condilos-femorais", name: "Côndilos femorais", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Fêmur" },
+      { id: "epicondilo-medial-femur", name: "Epicôndilo medial", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Fêmur" },
+      { id: "epicondilo-lateral-femur", name: "Epicôndilo lateral", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Fêmur" },
+      { id: "face-patelar", name: "Face patelar", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Fêmur" },
+      { id: "sacro", name: "Sacro", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "ilio", name: "Ílio", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "pubis", name: "Púbis", region: "Quadril, pelve e fêmur", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "coxofemoral", name: "Coxofemoral", region: "Quadril, pelve e fêmur", group: "Articulações", context: "Cabeça do fêmur + acetábulo" },
+      { id: "sacroiliaca", name: "Sacroilíaca", region: "Quadril, pelve e fêmur", group: "Articulações", context: "Sacro + ílio" },
+      { id: "quadriceps", name: "Quadríceps", region: "Quadril, pelve e fêmur", group: "Músculos", context: "Músculos principais" },
+      { id: "gluteo-maximo", name: "Glúteo máximo", region: "Quadril, pelve e fêmur", group: "Músculos", context: "Músculos principais" },
+      { id: "isquiotibiais-quadril", name: "Isquiotibiais", region: "Quadril, pelve e fêmur", group: "Músculos", context: "Músculos principais" },
+
+      { id: "tibia-proximal", name: "Tíbia proximal", region: "Joelho", group: "Ossos e acidentes", context: "Tíbia proximal" },
+      { id: "eminencia-intercondilar", name: "Eminência intercondilar", region: "Joelho", group: "Ossos e acidentes", context: "Tíbia proximal" },
+      { id: "tuberosidade-tibia", name: "Tuberosidade da tíbia", region: "Joelho", group: "Ossos e acidentes", context: "Tíbia proximal" },
+      { id: "fibula-proximal", name: "Fíbula proximal", region: "Joelho", group: "Ossos e acidentes", context: "Fíbula proximal" },
+      { id: "cabeca-fibula", name: "Cabeça da fíbula", region: "Joelho", group: "Ossos e acidentes", context: "Fíbula proximal" },
+      { id: "platos-tibiais", name: "Platôs tibiais", region: "Joelho", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "patela", name: "Patela", region: "Joelho", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "tibiofemoral", name: "Tibiofemoral", region: "Joelho", group: "Articulações", context: "Côndilos femorais + platôs tibiais" },
+      { id: "patelofemoral", name: "Patelofemoral", region: "Joelho", group: "Articulações", context: "Patela + face patelar do fêmur" },
+      { id: "reto-femoral", name: "Reto femoral", region: "Joelho", group: "Músculos", context: "Extensores do joelho" },
+      { id: "vasto-medial", name: "Vasto medial", region: "Joelho", group: "Músculos", context: "Extensores do joelho" },
+      { id: "vasto-lateral", name: "Vasto lateral", region: "Joelho", group: "Músculos", context: "Extensores do joelho" },
+      { id: "vasto-intermedio", name: "Vasto intermédio", region: "Joelho", group: "Músculos", context: "Extensores do joelho" },
+      { id: "isquiotibiais-joelho", name: "Isquiotibiais", region: "Joelho", group: "Músculos", context: "Flexores do joelho" },
+
+      { id: "tibia-distal", name: "Tíbia distal", region: "Tornozelo e pé", group: "Ossos e acidentes", context: "Tíbia distal" },
+      { id: "maleolo-medial", name: "Maléolo medial", region: "Tornozelo e pé", group: "Ossos e acidentes", context: "Tíbia distal" },
+      { id: "fibula-distal", name: "Fíbula distal", region: "Tornozelo e pé", group: "Ossos e acidentes", context: "Fíbula distal" },
+      { id: "maleolo-lateral", name: "Maléolo lateral", region: "Tornozelo e pé", group: "Ossos e acidentes", context: "Fíbula distal" },
+      { id: "ossos-tarso", name: "Ossos do tarso", region: "Tornozelo e pé", group: "Ossos e acidentes", context: "Ossos do tarso" },
+      { id: "talus", name: "Tálus", region: "Tornozelo e pé", group: "Ossos e acidentes", context: "Ossos do tarso" },
+      { id: "calcaneo", name: "Calcâneo", region: "Tornozelo e pé", group: "Ossos e acidentes", context: "Ossos do tarso" },
+      { id: "navicular", name: "Navicular", region: "Tornozelo e pé", group: "Ossos e acidentes", context: "Ossos do tarso" },
+      { id: "cuboide", name: "Cuboide", region: "Tornozelo e pé", group: "Ossos e acidentes", context: "Ossos do tarso" },
+      { id: "cuneiformes", name: "Cuneiformes", region: "Tornozelo e pé", group: "Ossos e acidentes", context: "Ossos do tarso" },
+      { id: "tibia", name: "Tíbia", region: "Tornozelo e pé", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "fibula", name: "Fíbula", region: "Tornozelo e pé", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "metatarsos", name: "Metatarsos", region: "Tornozelo e pé", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "falanges-pe", name: "Falanges do pé", region: "Tornozelo e pé", group: "Ossos e acidentes", context: "Componente articular" },
+      { id: "talocrural", name: "Talocrural", region: "Tornozelo e pé", group: "Articulações", context: "Tíbia, fíbula e tálus" },
+      { id: "subtalar", name: "Subtalar", region: "Tornozelo e pé", group: "Articulações", context: "Tálus + calcâneo" },
+      { id: "metatarsofalangicas", name: "Metatarsofalângicas", region: "Tornozelo e pé", group: "Articulações", context: "Metatarsos + falanges" },
+      { id: "interfalangicas-pe", name: "Interfalângicas", region: "Tornozelo e pé", group: "Articulações", context: "Falanges do pé" },
+      { id: "tibial-anterior", name: "Tibial anterior", region: "Tornozelo e pé", group: "Músculos", context: "Músculos principais" },
+      { id: "gastrocnemio", name: "Gastrocnêmio", region: "Tornozelo e pé", group: "Músculos", context: "Músculos principais" }
+    ];
+
+    let structures = [];
+
+    const elements = {
+      totalCount: document.getElementById("totalCount"),
+      remainingCount: document.getElementById("remainingCount"),
+      roundCount: document.getElementById("roundCount"),
+      classInput: document.getElementById("classInput"),
+      examInput: document.getElementById("examInput"),
+      examDateInput: document.getElementById("examDateInput"),
+      difficultyMode: document.getElementById("difficultyMode"),
+      timerDisplay: document.getElementById("timerDisplay"),
+      timerMinutes: document.getElementById("timerMinutes"),
+      timerStartButton: document.getElementById("timerStartButton"),
+      timerResetButton: document.getElementById("timerResetButton"),
+      studentModeButton: document.getElementById("studentModeButton"),
+      exportCsvButton: document.getElementById("exportCsvButton"),
+      backupButton: document.getElementById("backupButton"),
+      restoreBackupButton: document.getElementById("restoreBackupButton"),
+      backupFileInput: document.getElementById("backupFileInput"),
+      applicationTabButton: document.getElementById("applicationTabButton"),
+      bankTabButton: document.getElementById("bankTabButton"),
+      visibleBankCount: document.getElementById("visibleBankCount"),
+      selectedGrid: document.getElementById("selectedGrid"),
+      stationModeButton: document.getElementById("stationModeButton"),
+      stationView: document.getElementById("stationView"),
+      stationLabel: document.getElementById("stationLabel"),
+      stationName: document.getElementById("stationName"),
+      prevStationButton: document.getElementById("prevStationButton"),
+      nextStationButton: document.getElementById("nextStationButton"),
+      historyList: document.getElementById("historyList"),
+      bankList: document.getElementById("bankList"),
+      studentCount: document.getElementById("studentCount"),
+      studentBulkInput: document.getElementById("studentBulkInput"),
+      addStudentsButton: document.getElementById("addStudentsButton"),
+      clearStudentsButton: document.getElementById("clearStudentsButton"),
+      studentList: document.getElementById("studentList"),
+      spinButton: document.getElementById("spinButton"),
+      resetButton: document.getElementById("resetButton"),
+      clearRoundButton: document.getElementById("clearRoundButton"),
+      copyButton: document.getElementById("copyButton"),
+      printButton: document.getElementById("printButton"),
+      clearHistoryButton: document.getElementById("clearHistoryButton"),
+      searchInput: document.getElementById("searchInput"),
+      newStructureInput: document.getElementById("newStructureInput"),
+      newDifficultySelect: document.getElementById("newDifficultySelect"),
+      addStructureButton: document.getElementById("addStructureButton"),
+      restoreBankButton: document.getElementById("restoreBankButton"),
+      bulkImportInput: document.getElementById("bulkImportInput"),
+      importFileButton: document.getElementById("importFileButton"),
+      bankFileInput: document.getElementById("bankFileInput"),
+      appendImportButton: document.getElementById("appendImportButton"),
+      replaceImportButton: document.getElementById("replaceImportButton"),
+      roundLabel: document.getElementById("roundLabel"),
+      toast: document.getElementById("toast"),
+      spinStep: document.getElementById("spinStep"),
+      spinName: document.getElementById("spinName"),
+      canvas: document.getElementById("wheelCanvas")
+    };
+
+    const ctx = elements.canvas.getContext("2d");
+    let state = loadState();
+    let wheelItems = [];
+    let wheelRotation = 0;
+    let stationIndex = 0;
+    let stationMode = false;
+    let timerSeconds = Number(elements.timerMinutes.value) * 60;
+    let timerInterval = null;
+    let studentMode = false;
+    let activeView = "application";
+
+    function cloneDefaultBank() {
+      return DEFAULT_STRUCTURES.map(item => ({ id: item.id, name: item.name, difficulty: "medium" }));
+    }
+
+    function normalizeBank(bank) {
+      const seen = new Set();
+      const difficultyAliases = {
+        facil: "easy",
+        fácil: "easy",
+        easy: "easy",
+        medio: "medium",
+        médio: "medium",
+        medium: "medium",
+        dificil: "hard",
+        difícil: "hard",
+        hard: "hard"
+      };
+      return bank
+        .map((item, index) => ({
+          id: String(item.id || `estrutura-${Date.now()}-${index}`),
+          name: String(item.name || "").trim(),
+          difficulty: difficultyAliases[normalize(String(item.difficulty || "medium"))] || "medium"
+        }))
+        .filter(item => item.name && !seen.has(item.id) && seen.add(item.id));
+    }
+
+    function normalizeCriteria(criteria = {}) {
+      return {
+        location: Boolean(criteria.location ?? criteria.identify),
+        palpation: Boolean(criteria.palpation),
+        function: Boolean(criteria.function)
+      };
+    }
+
+    function normalizeStudent(student, index = 0) {
+      return {
+        id: String(student?.id || `aluno-importado-${index}`),
+        name: String(student?.name || "").trim(),
+        score: String(student?.score ?? ""),
+        criteria: normalizeCriteria(student?.criteria)
+      };
+    }
+
+    function normalizeStudents(students) {
+      return students
+        .map(normalizeStudent)
+        .filter(student => student.name);
+    }
+
+    function normalizeHistory(history) {
+      return history.slice(0, 200).map(round => ({
+        ...round,
+        students: Array.isArray(round.students) ? normalizeStudents(round.students) : []
+      }));
+    }
+
+    function loadState() {
+      try {
+        const stored = JSON.parse(
+          localStorage.getItem(STORAGE_KEY) ||
+          localStorage.getItem("roleta-anatomia-aplicada-v2") ||
+          localStorage.getItem("roleta-anatomia-aplicada-v1")
+        );
+        if (stored && Array.isArray(stored.bank)) {
+          structures = normalizeBank(stored.bank);
+          const validIds = new Set(structures.map(item => item.id));
+          return {
+            used: new Set(Array.isArray(stored.used) ? stored.used.filter(id => validIds.has(id)) : []),
+            history: Array.isArray(stored.history) ? normalizeHistory(stored.history) : [],
+            current: Array.isArray(stored.current) ? stored.current.filter(id => validIds.has(id)) : [],
+            students: Array.isArray(stored.students) ? normalizeStudents(stored.students).slice(0, 200) : [],
+            exam: stored.exam && typeof stored.exam === "object" ? stored.exam : defaultExam()
+          };
+        }
+      } catch (error) {
+        console.warn(error);
+      }
+      structures = cloneDefaultBank();
+      return { used: new Set(), history: [], current: [], students: [], exam: defaultExam() };
+    }
+
+    function persistState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        bank: structures,
+        used: [...state.used],
+        history: state.history.slice(0, 200),
+        current: state.current,
+        students: state.students,
+        exam: state.exam
+      }));
+    }
+
+    function defaultExam() {
+      return {
+        className: "",
+        examName: "Anatomia aplicada",
+        date: new Date().toISOString().slice(0, 10),
+        difficultyMode: "mixed"
+      };
+    }
+
+    function getAvailablePool() {
+      return getRoundPool().filter(item => !state.used.has(item.id));
+    }
+
+    function getRoundPool() {
+      const mode = state.exam.difficultyMode || "mixed";
+      if (["easy", "medium", "hard"].includes(mode)) {
+        return structures.filter(item => item.difficulty === mode);
+      }
+      return structures;
+    }
+
+    function drawWheel(rotation = wheelRotation) {
+      const canvas = elements.canvas;
+      const size = canvas.width;
+      const radius = size / 2;
+      const center = size / 2;
+      const items = wheelItems.length ? wheelItems : structures.slice(0, 18);
+
+      ctx.clearRect(0, 0, size, size);
+      if (!items.length) {
+        ctx.save();
+        ctx.translate(center, center);
+        ctx.beginPath();
+        ctx.arc(0, 0, radius - 18, 0, Math.PI * 2);
+        ctx.fillStyle = "#eef5f4";
+        ctx.fill();
+        ctx.lineWidth = 14;
+        ctx.strokeStyle = "rgba(23, 33, 38, 0.16)";
+        ctx.stroke();
+        ctx.restore();
+        return;
+      }
+
+      const slice = (Math.PI * 2) / items.length;
+      ctx.save();
+      ctx.translate(center, center);
+      ctx.rotate(rotation);
+
+      items.forEach((item, index) => {
+        const start = index * slice;
+        const end = start + slice;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, radius - 18, start, end);
+        ctx.closePath();
+        ctx.fillStyle = COLORS[index % COLORS.length];
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255,0.78)";
+        ctx.lineWidth = 5;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.rotate(start + slice / 2);
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "700 28px Inter, Segoe UI, sans-serif";
+        const text = compactLabel(item.name);
+        ctx.fillText(text, radius - 54, 0, radius * 0.46);
+        ctx.restore();
+      });
+
+      ctx.beginPath();
+      ctx.arc(0, 0, radius - 18, 0, Math.PI * 2);
+      ctx.lineWidth = 14;
+      ctx.strokeStyle = "rgba(23, 33, 38, 0.16)";
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function compactLabel(label) {
+      if (label.length <= 24) return label;
+      return label.slice(0, 22).trimEnd() + "...";
+    }
+
+    function setToast(message) {
+      elements.toast.textContent = message;
+    }
+
+    function cryptoIndex(max) {
+      if (max <= 1) return 0;
+      const array = new Uint32Array(1);
+      crypto.getRandomValues(array);
+      return array[0] % max;
+    }
+
+    function shuffled(items) {
+      const result = [...items];
+      for (let index = result.length - 1; index > 0; index -= 1) {
+        const swapIndex = cryptoIndex(index + 1);
+        [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+      }
+      return result;
+    }
+
+    function pickRound() {
+      const pool = getRoundPool();
+      if (pool.length < ROUND_SIZE) {
+        return { picked: [], resetCycle: false, insufficient: true };
+      }
+
+      let available = getAvailablePool();
+      let resetCycle = false;
+      if (available.length < ROUND_SIZE) {
+        const poolIds = new Set(pool.map(item => item.id));
+        state.used = new Set([...state.used].filter(id => !poolIds.has(id)));
+        available = getAvailablePool();
+        resetCycle = true;
+      }
+
+      return {
+        picked: pickByDifficulty(available),
+        resetCycle,
+        insufficient: false
+      };
+    }
+
+    function pickByDifficulty(available) {
+      if (state.exam.difficultyMode !== "mixed") {
+        return shuffled(available).slice(0, ROUND_SIZE);
+      }
+
+      const picked = [];
+      const buckets = {
+        easy: shuffled(available.filter(item => item.difficulty === "easy")),
+        medium: shuffled(available.filter(item => item.difficulty === "medium")),
+        hard: shuffled(available.filter(item => item.difficulty === "hard"))
+      };
+      ["easy", "medium", "hard", "medium", "hard", "easy"].forEach(level => {
+        const item = buckets[level].shift();
+        if (item) picked.push(item);
+      });
+
+      const pickedIds = new Set(picked.map(item => item.id));
+      shuffled(available)
+        .filter(item => !pickedIds.has(item.id))
+        .slice(0, ROUND_SIZE - picked.length)
+        .forEach(item => picked.push(item));
+
+      return picked.slice(0, ROUND_SIZE);
+    }
+
+    function makeWheelItems(winner) {
+      const pool = shuffled(getRoundPool().filter(item => item.id !== winner.id)).slice(0, 17);
+      const insertAt = cryptoIndex(pool.length + 1);
+      pool.splice(insertAt, 0, winner);
+      return shuffled(pool).slice(0, 18);
+    }
+
+    function winnerRotation(winner) {
+      const index = wheelItems.findIndex(item => item.id === winner.id);
+      const slice = (Math.PI * 2) / wheelItems.length;
+      const centerOfSlice = index * slice + slice / 2;
+      const pointerAngle = -Math.PI / 2;
+      const fullTurns = 5 + cryptoIndex(3);
+      return fullTurns * Math.PI * 2 + pointerAngle - centerOfSlice;
+    }
+
+    function easeOutCubic(value) {
+      return 1 - Math.pow(1 - value, 3);
+    }
+
+    function spinTo(winner, stepIndex) {
+      wheelItems = makeWheelItems(winner);
+      const start = wheelRotation;
+      const target = winnerRotation(winner);
+      const distance = target - (start % (Math.PI * 2));
+      const duration = 880;
+      elements.spinStep.textContent = `${stepIndex + 1} de ${ROUND_SIZE}`;
+      elements.spinName.textContent = "Girando";
+
+      return new Promise(resolve => {
+        const startTime = performance.now();
+
+        function frame(now) {
+          const progress = Math.min((now - startTime) / duration, 1);
+          wheelRotation = start + distance * easeOutCubic(progress);
+          drawWheel(wheelRotation);
+
+          if (progress < 1) {
+            requestAnimationFrame(frame);
+          } else {
+            elements.spinName.textContent = winner.name;
+            resolve();
+          }
+        }
+
+        requestAnimationFrame(frame);
+      });
+    }
+
+    function structureById(id) {
+      return structures.find(item => item.id === id);
+    }
+
+    function renderSelected(partialItems = null) {
+      const currentItems = partialItems || state.current.map(structureById).filter(Boolean);
+      elements.selectedGrid.innerHTML = "";
+
+      for (let index = 0; index < ROUND_SIZE; index += 1) {
+        const item = currentItems[index];
+        const card = document.createElement("article");
+        card.className = `structure-card${item ? "" : " empty"}`;
+
+        if (item) {
+          card.innerHTML = `
+            <span class="card-index">${index + 1}</span>
+            <div class="structure-name">${escapeHtml(item.name)}</div>
+          `;
+        } else {
+          card.innerHTML = `
+            <span class="card-index">${index + 1}</span>
+            <div class="structure-name">Aguardando sorteio</div>
+          `;
+        }
+
+        elements.selectedGrid.appendChild(card);
+      }
+
+      elements.roundLabel.textContent = currentItems.length ? `${currentItems.length} de ${ROUND_SIZE}` : `${ROUND_SIZE} estruturas`;
+      renderStation(currentItems);
+      elements.selectedGrid.hidden = stationMode;
+    }
+
+    function renderStation(items = null) {
+      const currentItems = items || state.current.map(structureById).filter(Boolean);
+      elements.stationView.hidden = !stationMode;
+      elements.stationModeButton.textContent = stationMode ? "Ver todas" : "Modo estação";
+
+      if (!currentItems.length) {
+        elements.stationLabel.textContent = "Estação 1 de 6";
+        elements.stationName.textContent = "Aguardando sorteio";
+        return;
+      }
+
+      stationIndex = Math.max(0, Math.min(stationIndex, currentItems.length - 1));
+      elements.stationLabel.textContent = `Estação ${stationIndex + 1} de ${currentItems.length}`;
+      elements.stationName.textContent = currentItems[stationIndex].name;
+    }
+
+    function renderHistory() {
+      elements.historyList.innerHTML = "";
+
+      if (!state.history.length) {
+        const empty = document.createElement("div");
+        empty.className = "history-item";
+        empty.innerHTML = "<strong>Nenhuma rodada registrada</strong><span></span>";
+        elements.historyList.appendChild(empty);
+        return;
+      }
+
+      state.history.forEach((round, index) => {
+        const item = document.createElement("article");
+        item.className = "history-item";
+        const names = Array.isArray(round.names)
+          ? round.names.join("; ")
+          : round.ids.map(structureById).filter(Boolean).map(structure => structure.name).join("; ");
+        const students = Array.isArray(round.students) ? round.students : [];
+        const studentText = students.length
+          ? students.map(student => `${student.name}${student.score ? ` (${student.score})` : ""}${formatCriteria(student.criteria)}`).join("; ")
+          : "Sem alunos registrados";
+        const meta = [round.exam?.className, round.exam?.examName, round.exam?.date]
+          .filter(Boolean)
+          .join(" · ");
+        item.innerHTML = `
+          <strong>Rodada ${state.history.length - index}</strong>
+          <span>${escapeHtml(meta || "Sem turma/prova definida")}</span>
+          <span>${escapeHtml(names)}</span>
+          <span>${escapeHtml(studentText)}</span>
+        `;
+        elements.historyList.appendChild(item);
+      });
+    }
+
+    function renderBank() {
+      const query = normalize(elements.searchInput.value);
+      const visible = structures.filter(item => {
+        return normalize(`${item.name} ${DIFFICULTIES[item.difficulty] || ""}`).includes(query);
+      });
+
+      elements.bankList.innerHTML = "";
+      visible.forEach(item => {
+        const row = document.createElement("article");
+        row.className = `bank-item${state.used.has(item.id) ? " used" : ""}`;
+        row.innerHTML = `
+          <div class="bank-name">${escapeHtml(item.name)}<span class="difficulty-tag">${escapeHtml(DIFFICULTIES[item.difficulty] || "Médio")}</span></div>
+          <div class="bank-actions">
+            <button class="mini-button" type="button" data-action="edit" data-id="${escapeHtml(item.id)}">Editar</button>
+            <button class="mini-button danger" type="button" data-action="delete" data-id="${escapeHtml(item.id)}">Excluir</button>
+          </div>
+        `;
+        elements.bankList.appendChild(row);
+      });
+
+      elements.visibleBankCount.textContent = `${visible.length} itens`;
+    }
+
+    function renderStudents() {
+      elements.studentList.innerHTML = "";
+      elements.studentCount.textContent = `${state.students.length} ${state.students.length === 1 ? "aluno" : "alunos"}`;
+
+      if (!state.current.length) {
+        const empty = document.createElement("div");
+        empty.className = "history-item";
+        empty.innerHTML = "<strong>Sorteie uma rodada para registrar alunos</strong><span></span>";
+        elements.studentList.appendChild(empty);
+        return;
+      }
+
+      if (!state.students.length) {
+        const empty = document.createElement("div");
+        empty.className = "history-item";
+        empty.innerHTML = "<strong>Nenhum aluno registrado nesta rodada</strong><span></span>";
+        elements.studentList.appendChild(empty);
+        return;
+      }
+
+      state.students.forEach(student => {
+        const row = document.createElement("article");
+        row.className = "student-row";
+        row.innerHTML = `
+          <div class="student-name-cell">
+            <input type="text" value="${escapeHtml(student.name)}" data-field="name" data-id="${escapeHtml(student.id)}" aria-label="Nome de ${escapeHtml(student.name)}">
+          </div>
+          <label class="student-check">
+            <input type="checkbox" data-field="location" data-id="${escapeHtml(student.id)}"${student.criteria?.location ? " checked" : ""}>
+            <span>Localização</span>
+          </label>
+          <label class="student-check">
+            <input type="checkbox" data-field="palpation" data-id="${escapeHtml(student.id)}"${student.criteria?.palpation ? " checked" : ""}>
+            <span>Palpação</span>
+          </label>
+          <label class="student-check">
+            <input type="checkbox" data-field="function" data-id="${escapeHtml(student.id)}"${student.criteria?.function ? " checked" : ""}>
+            <span>Função</span>
+          </label>
+          <div>
+            <input type="number" min="0" max="10" step="0.1" value="${escapeHtml(String(student.score || "").replace(",", "."))}" placeholder="Nota" data-field="score" data-id="${escapeHtml(student.id)}" aria-label="Nota de ${escapeHtml(student.name)}">
+          </div>
+          <div class="student-actions">
+            <button class="mini-button danger" type="button" data-action="remove-student" data-id="${escapeHtml(student.id)}">Excluir</button>
+          </div>
+        `;
+        elements.studentList.appendChild(row);
+      });
+    }
+
+    function renderCounts() {
+      const remaining = getRoundPool().filter(item => !state.used.has(item.id)).length;
+      elements.totalCount.textContent = structures.length;
+      elements.remainingCount.textContent = remaining;
+      elements.roundCount.textContent = state.history.length;
+    }
+
+    function renderAll() {
+      renderExam();
+      renderCounts();
+      renderSelected();
+      renderStudents();
+      renderHistory();
+      renderBank();
+      renderTimer();
+      switchView(activeView);
+      drawWheel();
+    }
+
+    function renderExam() {
+      elements.classInput.value = state.exam.className || "";
+      elements.examInput.value = state.exam.examName || "";
+      elements.examDateInput.value = state.exam.date || "";
+      elements.difficultyMode.value = state.exam.difficultyMode || "mixed";
+    }
+
+    function updateExamFromInputs() {
+      state.exam = {
+        className: elements.classInput.value.trim(),
+        examName: elements.examInput.value.trim(),
+        date: elements.examDateInput.value,
+        difficultyMode: elements.difficultyMode.value
+      };
+      persistState();
+      renderCounts();
+      renderBank();
+      wheelItems = shuffled(getRoundPool()).slice(0, 18);
+      drawWheel();
+    }
+
+    async function startRound() {
+      if (elements.spinButton.disabled) return;
+      const result = pickRound();
+      if (result.insufficient) {
+        setToast("O banco filtrado pelo modo de sorteio precisa ter pelo menos 6 estruturas.");
+        return;
+      }
+
+      elements.spinButton.disabled = true;
+      elements.resetButton.disabled = true;
+      elements.clearRoundButton.disabled = true;
+      setToast(result.resetCycle ? "Novo ciclo iniciado para o banco." : "");
+      state.current = [];
+      state.students = [];
+      stationIndex = 0;
+      renderSelected([]);
+      renderStudents();
+
+      const revealed = [];
+      for (let index = 0; index < result.picked.length; index += 1) {
+        const winner = result.picked[index];
+        await spinTo(winner, index);
+        revealed.push(winner);
+        renderSelected(revealed);
+        await delay(170);
+      }
+
+      result.picked.forEach(item => state.used.add(item.id));
+      state.current = result.picked.map(item => item.id);
+      state.history.unshift({
+        at: new Date().toISOString(),
+        ids: state.current,
+        names: result.picked.map(item => item.name),
+        exam: { ...state.exam },
+        difficultyMode: state.exam.difficultyMode,
+        students: []
+      });
+      state.history = state.history.slice(0, 200);
+      persistState();
+      elements.spinStep.textContent = "Rodada";
+      elements.spinName.textContent = "Finalizada";
+      elements.spinButton.disabled = false;
+      elements.resetButton.disabled = false;
+      elements.clearRoundButton.disabled = false;
+      setToast("Rodada registrada no histórico.");
+      renderAll();
+    }
+
+    function resetCurrentRegion() {
+      state.used = new Set();
+      state.current = [];
+      state.students = [];
+      persistState();
+      elements.spinStep.textContent = "Pronto";
+      elements.spinName.textContent = "Banco reiniciado";
+      setToast("Banco reiniciado.");
+      renderAll();
+    }
+
+    function clearRound() {
+      state.current = [];
+      state.students = [];
+      persistState();
+      elements.spinStep.textContent = "Pronto";
+      elements.spinName.textContent = "Nova rodada";
+      setToast("Rodada atual limpa.");
+      renderAll();
+    }
+
+    function clearHistory() {
+      state.history = [];
+      persistState();
+      setToast("Histórico limpo.");
+      renderAll();
+    }
+
+    function createId(prefix) {
+      return `${prefix}-${Date.now()}-${cryptoIndex(100000)}`;
+    }
+
+    function addStructure() {
+      const name = elements.newStructureInput.value.trim();
+      if (!name) {
+        setToast("Digite o nome da estrutura para adicionar.");
+        return;
+      }
+
+      structures.push({ id: createId("estrutura"), name, difficulty: elements.newDifficultySelect.value });
+      elements.newStructureInput.value = "";
+      wheelItems = shuffled(getRoundPool()).slice(0, 18);
+      persistState();
+      setToast("Estrutura adicionada ao banco.");
+      renderAll();
+    }
+
+    function editStructure(id) {
+      const item = structureById(id);
+      if (!item) return;
+
+      const nextName = prompt("Editar estrutura", item.name);
+      if (nextName === null) return;
+
+      const name = nextName.trim();
+      if (!name) {
+        setToast("O nome da estrutura não pode ficar vazio.");
+        return;
+      }
+
+      item.name = name;
+      const nextDifficulty = prompt("Dificuldade: fácil, médio ou difícil", DIFFICULTIES[item.difficulty] || "Médio");
+      if (nextDifficulty !== null) {
+        item.difficulty = parseDifficulty(nextDifficulty);
+      }
+      wheelItems = wheelItems.map(wheelItem => wheelItem.id === id ? item : wheelItem);
+      persistState();
+      setToast("Estrutura atualizada.");
+      renderAll();
+    }
+
+    function deleteStructure(id) {
+      const item = structureById(id);
+      if (!item) return;
+      if (!confirm(`Excluir "${item.name}" do banco?`)) return;
+
+      structures = structures.filter(structure => structure.id !== id);
+      state.used.delete(id);
+      state.current = state.current.filter(currentId => currentId !== id);
+      wheelItems = wheelItems.filter(wheelItem => wheelItem.id !== id);
+      if (wheelItems.length < Math.min(6, structures.length)) {
+        wheelItems = shuffled(getRoundPool()).slice(0, 18);
+      }
+      persistState();
+      setToast("Estrutura excluída do banco.");
+      renderAll();
+    }
+
+    function restoreOriginalBank() {
+      if (!confirm("Restaurar o banco original e limpar a rodada atual?")) return;
+      structures = cloneDefaultBank();
+      state.used = new Set();
+      state.current = [];
+      state.students = [];
+      wheelItems = shuffled(getRoundPool()).slice(0, 18);
+      persistState();
+      setToast("Banco original restaurado.");
+      renderAll();
+    }
+
+    function syncCurrentHistoryStudents() {
+      const latest = state.history[0];
+      if (!latest || !arraysEqual(latest.ids || [], state.current)) return;
+      latest.students = state.students.map(student => ({ ...student }));
+    }
+
+    function formatCriteria(criteria = {}) {
+      const normalizedCriteria = normalizeCriteria(criteria);
+      const active = Object.entries(CRITERIA)
+        .filter(([key]) => normalizedCriteria[key])
+        .map(([, label]) => label);
+      return active.length ? ` · ${active.join(", ")}` : "";
+    }
+
+    function addStudentsFromList() {
+      if (!state.current.length) {
+        setToast("Sorteie uma rodada antes de registrar alunos.");
+        return;
+      }
+
+      const names = elements.studentBulkInput.value
+        .split(/\r?\n/)
+        .map(name => name.trim())
+        .filter(Boolean);
+      if (!names.length) {
+        setToast("Digite ou cole pelo menos um aluno.");
+        return;
+      }
+
+      const existingNames = new Set(state.students.map(student => normalize(student.name)));
+      const added = [];
+      names.forEach(name => {
+        const normalizedName = normalize(name);
+        if (!normalizedName || existingNames.has(normalizedName)) return;
+        existingNames.add(normalizedName);
+        added.push({
+          id: createId("aluno"),
+          name,
+          score: "",
+          criteria: normalizeCriteria()
+        });
+      });
+
+      if (!added.length) {
+        setToast("Todos os alunos da lista já estão cadastrados.");
+        return;
+      }
+
+      state.students.push(...added);
+      elements.studentBulkInput.value = "";
+      syncCurrentHistoryStudents();
+      persistState();
+      setToast(`${added.length} ${added.length === 1 ? "aluno cadastrado" : "alunos cadastrados"} nesta rodada.`);
+      renderAll();
+    }
+
+    function updateStudentField(id, field, input) {
+      const student = state.students.find(item => item.id === id);
+      if (!student) return;
+
+      if (field === "name") {
+        const name = input.value.trim();
+        if (!name) {
+          setToast("O nome do aluno não pode ficar vazio.");
+          renderStudents();
+          return;
+        }
+        student.name = name;
+      } else if (field === "score") {
+        const rawScore = input.value.trim().replace(",", ".");
+        if (rawScore === "") {
+          student.score = "";
+        } else {
+          const numericScore = Number(rawScore);
+          if (Number.isNaN(numericScore) || numericScore < 0 || numericScore > 10) {
+            setToast("Informe uma nota entre 0 e 10.");
+            renderStudents();
+            return;
+          }
+          student.score = rawScore.replace(".", ",");
+        }
+      } else if (Object.hasOwn(CRITERIA, field)) {
+        student.criteria = normalizeCriteria(student.criteria);
+        student.criteria[field] = input.checked;
+      }
+
+      syncCurrentHistoryStudents();
+      persistState();
+    }
+
+    function removeStudent(id) {
+      state.students = state.students.filter(student => student.id !== id);
+      syncCurrentHistoryStudents();
+      persistState();
+      setToast("Aluno removido da rodada.");
+      renderAll();
+    }
+
+    function clearStudents() {
+      if (!state.students.length) return;
+      if (!confirm("Remover todos os alunos desta rodada?")) return;
+      state.students = [];
+      syncCurrentHistoryStudents();
+      persistState();
+      setToast("Alunos removidos da rodada.");
+      renderAll();
+    }
+
+    function parseStructureLines(text) {
+      return text
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => {
+          const parts = line.split(/[;\t,]/).map(part => part.trim()).filter(Boolean);
+          return {
+            id: createId("estrutura"),
+            name: parts[0],
+            difficulty: parseDifficulty(parts[1] || "medium")
+          };
+        })
+        .filter(item => item.name);
+    }
+
+    function importStructures(mode) {
+      const imported = parseStructureLines(elements.bulkImportInput.value);
+      if (!imported.length) {
+        setToast("Cole uma estrutura por linha para importar.");
+        return;
+      }
+
+      if (mode === "replace") {
+        if (!confirm("Substituir todo o banco de estruturas pela lista colada?")) return;
+        structures = normalizeBank(imported);
+        state.used = new Set();
+        state.current = [];
+        state.students = [];
+      } else {
+        structures = normalizeBank([...structures, ...imported]);
+      }
+
+      elements.bulkImportInput.value = "";
+      wheelItems = shuffled(getRoundPool()).slice(0, 18);
+      persistState();
+      setToast(mode === "replace" ? "Banco substituído pela lista importada." : "Lista adicionada ao banco.");
+      renderAll();
+    }
+
+    function loadBankFile(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        elements.bulkImportInput.value = String(reader.result || "");
+        setToast("Arquivo carregado. Escolha adicionar ou substituir o banco.");
+      };
+      reader.readAsText(file);
+    }
+
+    function exportCsv() {
+      const rows = [];
+      rows.push([
+        "Turma",
+        "Prova",
+        "Data",
+        "Rodada",
+        "Estrutura 1",
+        "Estrutura 2",
+        "Estrutura 3",
+        "Estrutura 4",
+        "Estrutura 5",
+        "Estrutura 6",
+        "Aluno",
+        "Nota",
+        "Localização",
+        "Palpação",
+        "Função"
+      ]);
+
+      state.history.slice().reverse().forEach((round, roundIndex) => {
+        const names = Array.isArray(round.names) ? round.names : round.ids.map(structureById).filter(Boolean).map(item => item.name);
+        const students = Array.isArray(round.students) && round.students.length ? round.students : [{ name: "", score: "", criteria: {} }];
+        students.forEach(student => {
+          const criteria = normalizeCriteria(student.criteria);
+          rows.push([
+            round.exam?.className || "",
+            round.exam?.examName || "",
+            round.exam?.date || "",
+            roundIndex + 1,
+            names[0] || "",
+            names[1] || "",
+            names[2] || "",
+            names[3] || "",
+            names[4] || "",
+            names[5] || "",
+            student.name || "",
+            student.score || "",
+            criteria.location ? "sim" : "",
+            criteria.palpation ? "sim" : "",
+            criteria.function ? "sim" : ""
+          ]);
+        });
+      });
+
+      const csv = rows.map(row => row.map(csvCell).join(";")).join("\n");
+      downloadFile(`resultados-roleta-${dateStamp()}.csv`, "\ufeff" + csv, "text/csv;charset=utf-8");
+      setToast("Resultados exportados em CSV.");
+    }
+
+    function backupState() {
+      const backup = {
+        version: 4,
+        exportedAt: new Date().toISOString(),
+        bank: structures,
+        used: [...state.used],
+        history: state.history,
+        current: state.current,
+        students: state.students,
+        exam: state.exam
+      };
+      downloadFile(`backup-roleta-${dateStamp()}.json`, JSON.stringify(backup, null, 2), "application/json");
+      setToast("Backup baixado.");
+    }
+
+    function restoreBackupFromFile(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const backup = JSON.parse(reader.result);
+          if (!backup || !Array.isArray(backup.bank)) throw new Error("backup inválido");
+          structures = normalizeBank(backup.bank);
+          const validIds = new Set(structures.map(item => item.id));
+          state.used = new Set(Array.isArray(backup.used) ? backup.used.filter(id => validIds.has(id)) : []);
+          state.history = Array.isArray(backup.history) ? normalizeHistory(backup.history) : [];
+          state.current = Array.isArray(backup.current) ? backup.current.filter(id => validIds.has(id)) : [];
+          state.students = Array.isArray(backup.students) ? normalizeStudents(backup.students).slice(0, 200) : [];
+          state.exam = backup.exam && typeof backup.exam === "object" ? backup.exam : defaultExam();
+          wheelItems = shuffled(getRoundPool()).slice(0, 18);
+          persistState();
+          setToast("Backup restaurado.");
+          renderAll();
+        } catch (error) {
+          setToast("Não foi possível restaurar esse backup.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function csvCell(value) {
+      const text = String(value ?? "");
+      return `"${text.replace(/"/g, '""')}"`;
+    }
+
+    function downloadFile(filename, content, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function dateStamp() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function renderTimer() {
+      const minutes = Math.floor(timerSeconds / 60).toString().padStart(2, "0");
+      const seconds = Math.floor(timerSeconds % 60).toString().padStart(2, "0");
+      elements.timerDisplay.textContent = `${minutes}:${seconds}`;
+      elements.timerStartButton.textContent = timerInterval ? "Pausar" : "Iniciar";
+    }
+
+    function toggleTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        renderTimer();
+        return;
+      }
+
+      if (timerSeconds <= 0) resetTimer();
+      timerInterval = setInterval(() => {
+        timerSeconds = Math.max(0, timerSeconds - 1);
+        renderTimer();
+        if (timerSeconds === 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          setToast("Tempo encerrado.");
+          renderTimer();
+        }
+      }, 1000);
+      renderTimer();
+    }
+
+    function resetTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      timerSeconds = Math.max(1, Number(elements.timerMinutes.value) || 5) * 60;
+      renderTimer();
+    }
+
+    function toggleStationMode() {
+      stationMode = !stationMode;
+      if (stationMode && !state.current.length) {
+        setToast("Sorteie uma rodada para usar o modo estação.");
+      }
+      renderSelected();
+    }
+
+    function moveStation(direction) {
+      const total = state.current.length || ROUND_SIZE;
+      stationIndex = (stationIndex + direction + total) % total;
+      renderStation();
+    }
+
+    function toggleStudentMode() {
+      if (!studentMode) switchView("application");
+      studentMode = !studentMode;
+      applyStudentMode();
+    }
+
+    function applyStudentMode() {
+      document.body.classList.toggle("student-mode", studentMode);
+      elements.studentModeButton.textContent = studentMode ? "Sair do modo aluno" : "Modo aluno";
+    }
+
+    function switchView(view) {
+      activeView = view === "bank" ? "bank" : "application";
+      if (activeView === "bank") studentMode = false;
+      document.body.classList.toggle("bank-view", activeView === "bank");
+      elements.applicationTabButton.classList.toggle("active", activeView === "application");
+      elements.bankTabButton.classList.toggle("active", activeView === "bank");
+      elements.applicationTabButton.setAttribute("aria-selected", String(activeView === "application"));
+      elements.bankTabButton.setAttribute("aria-selected", String(activeView === "bank"));
+      applyStudentMode();
+    }
+
+    async function copyRound() {
+      const currentItems = state.current.map(structureById).filter(Boolean);
+      if (!currentItems.length) {
+        setToast("Nenhuma rodada atual para copiar.");
+        return;
+      }
+
+      const text = currentItems
+        .map((item, index) => `${index + 1}. ${item.name}`)
+        .join("\n");
+
+      try {
+        await navigator.clipboard.writeText(text);
+        setToast("Rodada copiada.");
+      } catch (error) {
+        setToast("Não foi possível copiar pelo navegador.");
+      }
+    }
+
+    function arraysEqual(first, second) {
+      return first.length === second.length && first.every((value, index) => value === second[index]);
+    }
+
+    function parseDifficulty(value) {
+      const normalized = normalize(value);
+      if (["facil", "fácil", "easy"].includes(normalized)) return "easy";
+      if (["dificil", "difícil", "hard"].includes(normalized)) return "hard";
+      return "medium";
+    }
+
+    function normalize(value) {
+      return value
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    elements.spinButton.addEventListener("click", startRound);
+    elements.resetButton.addEventListener("click", resetCurrentRegion);
+    elements.clearRoundButton.addEventListener("click", clearRound);
+    elements.clearHistoryButton.addEventListener("click", clearHistory);
+    elements.classInput.addEventListener("input", updateExamFromInputs);
+    elements.examInput.addEventListener("input", updateExamFromInputs);
+    elements.examDateInput.addEventListener("change", updateExamFromInputs);
+    elements.difficultyMode.addEventListener("change", updateExamFromInputs);
+    elements.timerStartButton.addEventListener("click", toggleTimer);
+    elements.timerResetButton.addEventListener("click", resetTimer);
+    elements.timerMinutes.addEventListener("change", resetTimer);
+    elements.studentModeButton.addEventListener("click", toggleStudentMode);
+    elements.applicationTabButton.addEventListener("click", () => switchView("application"));
+    elements.bankTabButton.addEventListener("click", () => switchView("bank"));
+    elements.exportCsvButton.addEventListener("click", exportCsv);
+    elements.backupButton.addEventListener("click", backupState);
+    elements.restoreBackupButton.addEventListener("click", () => elements.backupFileInput.click());
+    elements.backupFileInput.addEventListener("change", event => {
+      const file = event.target.files?.[0];
+      if (file) restoreBackupFromFile(file);
+      event.target.value = "";
+    });
+    elements.stationModeButton.addEventListener("click", toggleStationMode);
+    elements.prevStationButton.addEventListener("click", () => moveStation(-1));
+    elements.nextStationButton.addEventListener("click", () => moveStation(1));
+    elements.copyButton.addEventListener("click", copyRound);
+    elements.printButton.addEventListener("click", () => window.print());
+    elements.searchInput.addEventListener("input", renderBank);
+    elements.addStructureButton.addEventListener("click", addStructure);
+    elements.restoreBankButton.addEventListener("click", restoreOriginalBank);
+    elements.importFileButton.addEventListener("click", () => elements.bankFileInput.click());
+    elements.bankFileInput.addEventListener("change", event => {
+      const file = event.target.files?.[0];
+      if (file) loadBankFile(file);
+      event.target.value = "";
+    });
+    elements.appendImportButton.addEventListener("click", () => importStructures("append"));
+    elements.replaceImportButton.addEventListener("click", () => importStructures("replace"));
+    elements.addStudentsButton.addEventListener("click", addStudentsFromList);
+    elements.clearStudentsButton.addEventListener("click", clearStudents);
+    elements.bankList.addEventListener("click", event => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      if (button.dataset.action === "edit") editStructure(button.dataset.id);
+      if (button.dataset.action === "delete") deleteStructure(button.dataset.id);
+    });
+    elements.studentList.addEventListener("click", event => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      if (button.dataset.action === "remove-student") removeStudent(button.dataset.id);
+    });
+    elements.studentList.addEventListener("change", event => {
+      const input = event.target.closest("[data-field][data-id]");
+      if (!input) return;
+      updateStudentField(input.dataset.id, input.dataset.field, input);
+    });
+
+    wheelItems = shuffled(getRoundPool()).slice(0, 18);
+    renderAll();
+  </script>
+</body>
+</html>
